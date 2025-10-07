@@ -1,45 +1,60 @@
 "use strict";
 
-const choice = ['rock', 'paper', 'scissors'];
-
-function getComputerChoice() {
-  return choice[Math.floor(Math.random() * choice.length)];
-}
-
-function getHumanChoice(shout = "rock, paper, scissors, shoot") {
-  const input = prompt(shout);
-  const humanChoice = (typeof input === 'string') ? input.toLowerCase() : input;
-  if (choice.indexOf(humanChoice) === -1) {
-    getHumanChoice();
-  } else {
-    return humanChoice;
-  }
-}
-
-function playRound(humanChoice, computerChoice) {
-  console.log(humanChoice);
-  console.log(computerChoice);
-  if (humanChoice === computerChoice) {
-    playRound(getHumanChoice("It’s a tie"), getComputerChoice());
-  } else {
-    const humanWinFlag = ((humanChoice === 'rock' && computerChoice === 'scissors') || (humanChoice === 'scissors' && computerChoice === 'paper') || (humanChoice === 'paper' && computerChoice === 'rock'));
-
-    console.log(`You ${(humanWinFlag) ? 'Win' : 'Lose'}! ${humanWinFlag ? humanChoice : computerChoice} beats ${humanWinFlag ? computerChoice : humanChoice}.`);
-    return (humanWinFlag);
-  }
-}
-
-
-
-//  playRoundを5回繰り返す
-// コンソールに勝者と得点を表示する
-function playGame() {
-  const count = 5;
-  let score;
-  // for (let i = 0; i < count; i++) {
-  //   score += playRound(getHumanChoice(), getComputerChoice());
-  //   console.log(score);
-  // }
-}
+let humanScore = 0;
+let computerScore = 0;
 
 playGame();
+
+
+function getComputerChoice() {
+  const random = Math.floor(Math.random() * 3) + 1;
+  switch(random) {
+    case 1:
+      return "rock";
+      break;
+    case 2:
+      return "paper";
+      break;
+    case 3:
+      return "scissors";
+      break;
+  }
+}
+
+
+function getHumanChoice(shout = "rock, paper, scissors, shoot") {
+  const humanChoice = prompt(shout);
+  return humanChoice;
+}
+
+
+function playRound(humanChoice, computerChoice) {
+  const formatHumanChoice = humanChoice.toLowerCase();
+  
+  if (formatHumanChoice === computerChoice) {
+    playRound(getHumanChoice("It’s a tie"), getComputerChoice());
+  } else {
+    const humanWinFlag = ((formatHumanChoice === "rock" && computerChoice === "scissors") || (formatHumanChoice === "scissors" && computerChoice === "paper") || (formatHumanChoice === "paper" && computerChoice === "rock"));
+
+    console.log(`You ${(humanWinFlag) ? "Win" : "Lose"}! ${humanWinFlag ? formatHumanChoice : computerChoice} beats ${humanWinFlag ? computerChoice : humanChoice}.`);
+    
+    if (humanWinFlag) {
+      humanScore++;
+    } else {
+      computerScore++;
+    }
+  }
+}
+
+
+function playGame() {
+  const count = 5;
+  for (let i = 0; i < count; i++) {
+    playRound(getHumanChoice(), getComputerChoice());
+  }
+  if (humanScore > computerScore) {
+    console.log(`You Win. You have ${humanScore} score${humanScore > 1 ? "s" : ""}.`);
+  } else {
+    console.log(`You Lose. You have ${humanScore} score${humanScore > 1 ? "s" : ""}.`);
+  }
+}
