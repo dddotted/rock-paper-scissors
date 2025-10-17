@@ -3,58 +3,59 @@
 let humanScore = 0;
 let computerScore = 0;
 
-playGame();
+const buttonList = document.querySelector(".button-list");
+const instructionText = document.querySelector(".instruction-text");
+const resultText = document.querySelector(".result-text");
+const defaultText = instructionText.textContent;
+
+const CHOICES = ["rock", "paper", "scissors"];
+
+buttonList.addEventListener("click", (e) => {
+  const button = e.target.closest("button");
+  if (!button || !buttonList.contains(button)) return;
+
+  const humanChoice = button.value;
+  if (!CHOICES.includes(humanChoice)) return;
+
+  playRound(humanChoice, getComputerChoice());
+
+  if (humanScore === 5 || computerScore === 5) {
+    finishGame();
+  }
+});
 
 
 function getComputerChoice() {
-  const random = Math.floor(Math.random() * 3) + 1;
-  switch(random) {
-    case 1:
-      return "rock";
-      break;
-    case 2:
-      return "paper";
-      break;
-    case 3:
-      return "scissors";
-      break;
-  }
-}
-
-
-function getHumanChoice(shout = "rock, paper, scissors, shoot") {
-  const humanChoice = prompt(shout);
-  return humanChoice;
+  return CHOICES[Math.floor(Math.random() * CHOICES.length)];
 }
 
 
 function playRound(humanChoice, computerChoice) {
-  const formatHumanChoice = humanChoice.toLowerCase();
-  
-  if (formatHumanChoice === computerChoice) {
-    playRound(getHumanChoice("It’s a tie"), getComputerChoice());
+  if (humanChoice === computerChoice) {
+    instructionText.textContent = "It’s a tie";
+    resultText.textContent = `${humanScore} VS ${computerScore}`;
   } else {
-    const humanWinFlag = ((formatHumanChoice === "rock" && computerChoice === "scissors") || (formatHumanChoice === "scissors" && computerChoice === "paper") || (formatHumanChoice === "paper" && computerChoice === "rock"));
+    instructionText.textContent = defaultText;
+    const humanWinFlag = judgeWin(humanChoice, computerChoice);
 
-    console.log(`You ${(humanWinFlag) ? "Win" : "Lose"}! ${humanWinFlag ? formatHumanChoice : computerChoice} beats ${humanWinFlag ? computerChoice : humanChoice}.`);
-    
-    if (humanWinFlag) {
-      humanScore++;
-    } else {
-      computerScore++;
-    }
+    (humanWinFlag) ? humanScore++ : computerScore++;
+
+    resultText.textContent = `You ${(humanWinFlag) ? "Win" : "Lose"}! ${humanWinFlag ? humanChoice : computerChoice} beats ${humanWinFlag ? computerChoice : humanChoice}. ${humanScore} VS ${computerScore}`;
   }
 }
 
 
-function playGame() {
-  const count = 5;
-  for (let i = 0; i < count; i++) {
-    playRound(getHumanChoice(), getComputerChoice());
-  }
-  if (humanScore > computerScore) {
-    console.log(`You Win. You have ${humanScore} score${humanScore > 1 ? "s" : ""}.`);
-  } else {
-    console.log(`You Lose. You have ${humanScore} score${humanScore > 1 ? "s" : ""}.`);
-  }
+function judgeWin(humanChoice, computerChoice) {
+  return (humanChoice === "rock" && computerChoice === "scissors") ||
+  (humanChoice === "scissors" && computerChoice === "paper") ||
+  (humanChoice === "paper" && computerChoice === "rock");
+}
+
+
+function finishGame() {
+  const youWin = humanScore > computerScore;
+  resultText.textContent = `${youWin ? "You Win." : "You Lose."} ${humanScore} VS ${computerScore}`;
+
+  humanScore = 0;
+  computerScore = 0;
 }
